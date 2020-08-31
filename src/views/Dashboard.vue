@@ -1,0 +1,71 @@
+<template>
+  <!-- <v-responsive min-height="100vh"> -->
+    <v-container
+      style="background: linear-gradient(180deg, #5C6BC0, #9FA8DA);"
+      class="white--text fill-height"
+      tag="section"
+      fluid
+    >
+      <!-- <v-responsive class="mx-auto pa-6" min-height="100vh" max-width="1304px"> -->
+        <v-container class="pa-0">
+          <v-row align="center" justify="center" class="mb-6">
+            <v-col cols="12" sm="6" md="6" align="center">
+              <!-- 현재 시각 컴포넌트 -->
+              <wishlist-time></wishlist-time>
+            </v-col>
+          </v-row>
+
+          <v-row align="center" justify="center">
+            <v-col cols="12" sm="4" md="4">
+              <!-- 현재 날씨 정보 컴포넌트 -->
+              <wishlistWeather :coords="getCoords"></wishlistWeather>
+            </v-col>
+
+            <v-col cols="12" sm="4" md="4">
+              <!-- 날씨 정보 검색창 컴포넌트 -->
+              <wishlistSearch></wishlistSearch>
+            </v-col>
+          </v-row>
+        </v-container>
+      <!-- </v-responsive> -->
+    </v-container>
+  <!-- </v-responsive> -->
+</template>
+
+<script>
+import Time from "../components/dashboard/Time.vue";
+import Weather from "../components/dashboard/Weather.vue";
+import Search from "../components/dashboard/Search.vue";
+
+export default {
+  components: {
+    wishlistTime: Time,
+    wishlistWeather: Weather,
+    wishlistSearch: Search
+  },
+  data() {
+    return {
+      flag: false,
+    }
+  },
+  computed: {
+    // 사용자의 검색 여부를 나타내는 플래그
+    isSubmitted() {
+      const coords = this.$store.getters.getCoordsData;
+      
+      if(coords.latitude == null || coords.longitude == null) {
+        return false
+      }
+      else {
+        return true
+      }
+    },
+    getCoords() {
+      const coords = this.$store.getters.getCoordsData;
+      return { addressName: coords.addressName, latitude: coords.latitude, longitude: coords.longitude };
+    }
+  }
+};
+</script>
+
+<style scoped></style>
