@@ -41,7 +41,10 @@ const state = {
   userData: null,
 
   // 에러 관련
-  loginErrorData: null
+  loginErrorMsg: null,
+
+  // 로딩 관련
+  isAuthLoading: false
 };
 
 const mutations = {
@@ -63,8 +66,12 @@ const mutations = {
   },
 
   // 로그인 성공/실패 여부 Mutation
-  loginStatus(state, payload) {
-    state.loginErrorData = payload;
+  fetchLoginErrorMsg(state, payload) {
+    state.loginErrorMsg = payload;
+  },
+
+  fetchLoading(state, payload) {
+    state.isAuthLoading = payload;
   },
 
   // 유저 프로필 데이터 Mutation
@@ -75,6 +82,9 @@ const mutations = {
 
 const actions = {
   login({ commit }, payload) {
+    // 로딩 상태를 true로 바꾼다.
+    commit("fetchLoading", true);
+
     // axios를 통해 URL로 HTTP POST 요청을 보낸다.
     instance
       .post(`login`, payload)
@@ -109,17 +119,32 @@ const actions = {
           userData.refreshTokenExpirationDate
         );
 
+        // 로딩 상태를 false 바꾼다.
+        commit("fetchLoading", false);
+
         // 로그인 성공 시, 홈 페이지로 리디렉트한다.
         router.replace("/");
       })
       .catch(error => {
         // 로그인 오류 시, 서버로부터 반환된 에러 데이터를 가져온다.
-        const errorData = error.response.data;
+        const errorResponse = error.response;
+        let errorMsg = "";
 
-        // State에 에러 정보를 저장한다.
-        commit("loginStatus", errorData);
+        // Unauthorized (401) 에러 처리
+        if (errorResponse.status == 401) {
+          errorMsg = "이메일 또는 비밀번호를 다시 확인해주세요.";
+        }
 
-        alert("로그인 실패!");
+        // Not Found(404) 에러 처리
+        if (errorResponse.status == 404) {
+          errorMsg = "서버 연결이 원활하지 못합니다. 잠시 후 시도해주세요.";
+        }
+
+        // 에러 메세지 State에 저장
+        commit("fetchLoginErrorMsg", errorMsg);
+
+        // 로딩 상태를 false 바꾼다.
+        commit("fetchLoading", false);
       });
   },
 
@@ -269,17 +294,17 @@ const actions = {
 };
 
 const getters = {
+  // 로그인 여부 반환
   isLoggedIn(state) {
     return state.accessToken !== null;
   },
-  isRegistrationFailed(state) {
-    return state.registrationErrorData !== null;
+  // 로딩 여부 반환
+  getLoadingStatus(state) {
+    return state.isAuthLoading;
   },
-  getRegistrationErrorData(state) {
-    return state.registrationErrorData;
-  },
-  isLoginFailed(state) {
-    return state.loginErrorData !== null;
+  // 로그인 에러 메세지 반환
+  getLoginErrorMsg(state) {
+    return state.loginErrorMsg;
   },
   getUserData(state) {
     return state.userData;

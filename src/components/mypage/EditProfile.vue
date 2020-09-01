@@ -15,9 +15,8 @@
           <span
             class="body-2 indigo--text font-weight-medium"
             style="cursor: pointer"
-            @click="onClick"
           >
-            프로필 사진 변경
+            프로필 사진 변경 (구현중)
           </span>
         </v-col>
       </v-row>

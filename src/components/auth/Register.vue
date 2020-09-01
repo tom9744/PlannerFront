@@ -9,7 +9,7 @@
         <p align="center">
           모든 항목을 입력하시면 회원가입 버튼이 활성화됩니다.
         </p>
-        <v-form ref="form" v-model="valid">
+        <v-form v-model="valid">
           <v-text-field
             label="이메일"
             prepend-icon="mdi-at"
@@ -60,7 +60,12 @@
             hint="만 18세 이상만 가입 가능합니다."
             persistent-hint
             v-model="birthday"
-            :rules="[required('생년월일'), isFromFuture(), isUnderAge()]"
+            :rules="[
+              required('생년월일'),
+              isFromFuture(),
+              isUnderAge(),
+              isTooOld()
+            ]"
           ></v-text-field>
         </v-form>
       </v-card-text>
@@ -153,7 +158,13 @@ export default {
         const today = new Date();
         return value =>
           today.getFullYear() - new Date(value).getFullYear() > 18 ||
-          "만 18세 이상만 가입할 수 있습니다.";
+          "만 18세 미만은 가입할 수 없습니다.";
+      },
+      isTooOld() {
+        const today = new Date();
+        return value =>
+          today.getFullYear() - new Date(value).getFullYear() < 110 ||
+          "역사인물은 박물관에서 만나주세요.";
       },
 
       email: "",
