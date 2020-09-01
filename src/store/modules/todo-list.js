@@ -1,6 +1,10 @@
 import axios from "axios";
 import authStore from "./authStore.js";
 
+const instance = axios.create({
+  baseURL: "https://hrhr-planner.herokuapp.com/api/plan/"
+});
+
 const state = {
   todos: [],
   filteredTodos: [],
@@ -57,9 +61,9 @@ const actions = {
   },
 
   getAllTodos({ state, commit, dispatch }) {
-    axios
+    instance
       // 서버로부터 TodoList 항목을 받아온다.
-      .get("http://127.0.0.1:8000/api/plan/bucket-list/", {
+      .get("bucket-list/", {
         headers: { Authorization: `Bearer ${authStore.state.accessToken}` }
       })
       .then(response => {
@@ -79,9 +83,9 @@ const actions = {
 
   addTodo({ dispatch }, payload) {
     // 새로운 버켓리스트 항목을 서버 데이터베이스에 추가한다.
-    axios
+    instance
       .post(
-        "http://127.0.0.1:8000/api/plan/bucket-list/",
+        "bucket-list/",
         { title: payload.title, importance: payload.importance },
         { headers: { Authorization: `Bearer ${authStore.state.accessToken}` } }
       )
@@ -95,17 +99,17 @@ const actions = {
   },
 
   toggleTodo({ dispatch }, payload) {
-    axios
+    instance
       // 우선 주어진 ID 값으로 서버에 GET 요청을 보낸다.
-      .get(`http://127.0.0.1:8000/api/plan/bucket-list/${payload.id}/`, {
+      .get(`bucket-list/${payload.id}/`, {
         headers: { Authorization: `Bearer ${authStore.state.accessToken}` }
       })
       .then(response => {
         const todo = response.data; // 응답받은 데이터에서 todo 정보 추출.
 
-        axios
+        instance
           .patch(
-            `http://127.0.0.1:8000/api/plan/bucket-list/${payload.id}/`,
+            `bucket-list/${payload.id}/`,
             { is_complete: !todo.is_complete }, // 현재 is_complete 값과 반대되는 값으로 수정한다.
             {
               headers: {
@@ -127,8 +131,8 @@ const actions = {
   },
 
   deleteTodo({ dispatch }, payload) {
-    axios
-      .delete(`http://127.0.0.1:8000/api/plan/bucket-list/${payload.id}/`, {
+    instance
+      .delete(`bucket-list/${payload.id}/`, {
         headers: { Authorization: `Bearer ${authStore.state.accessToken}` }
       })
       .then(() => {

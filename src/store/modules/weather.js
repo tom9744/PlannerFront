@@ -18,7 +18,7 @@ const state = {
   humidity: null,
   feels_like: null,
   description: null,
-  iconId: null,
+  iconId: null
 };
 
 const mutations = {
@@ -54,7 +54,7 @@ const actions = {
       .get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${OPENWEATHER_KEY}&units=metric`
       )
-      .then( async (response) => {
+      .then(async response => {
         const celcius = response.data.main;
         const weather = response.data.weather.pop();
 
@@ -64,12 +64,12 @@ const actions = {
           humidity: celcius.humidity,
           feels_like: celcius.feels_like,
           description: weather.main,
-          iconId: weather.icon,
+          iconId: weather.icon
         };
 
         commit("fetchWeather", payload);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
         alert("날씨 정보를 불러오는데 실패했습니다!");
       });
@@ -81,7 +81,7 @@ const actions = {
         `https://dapi.kakao.com/v2/local/search/address.json?page=1&size=1&query=${payload}`,
         { headers: { Authorization: `KakaoAK ${KAKAO_KEY}` } }
       )
-      .then((response) => {
+      .then(response => {
         // 입력된 값이 잘못된 경우, documents 배열의 길이가 0임을 이용한다.
         const data = response.data.documents.length;
 
@@ -92,32 +92,32 @@ const actions = {
           commit("fetchCoords", {
             latitude: location.y,
             longitude: location.x,
-            addressName: location.address_name,
+            addressName: location.address_name
           });
-        } 
+        }
         // 정보를 받아오지 못한 경우, 경고창을 출력한다.
         else {
           alert("입력한 지역에 대한 위치 정보를 가져오는데 실패했습니다!");
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error.response);
       });
   },
   // 주어진 위도, 경도로부터 주소를 반환한다.
   coordsToLocation({ commit }, payload) {
     axios
-    .get(
-      `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?output_coord=WGS84&x=${payload.longitude}&y=${payload.latitude}&input_coord=WGS84"`,
-      { headers: { Authorization: `KakaoAK ${KAKAO_KEY}` } }
-    )
-    .then(response => {
-      commit("fetchLocation", response.data.documents.pop().address_name);
-    })
-    .catch(error => {
-      console.log(error);
-      alert("좌표를 주소로 변환하는데 실패했습니다.")
-    })
+      .get(
+        `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?output_coord=WGS84&x=${payload.longitude}&y=${payload.latitude}&input_coord=WGS84"`,
+        { headers: { Authorization: `KakaoAK ${KAKAO_KEY}` } }
+      )
+      .then(response => {
+        commit("fetchLocation", response.data.documents.pop().address_name);
+      })
+      .catch(error => {
+        console.log(error);
+        alert("좌표를 주소로 변환하는데 실패했습니다.");
+      });
   }
 };
 
@@ -133,7 +133,7 @@ const getters = {
       humidity: state.humidity,
       feels_like: state.feels_like,
       description: state.description,
-      iconId: state.iconId,
+      iconId: state.iconId
     };
     return data;
   },
@@ -144,12 +144,12 @@ const getters = {
       addressName: state.addressName
     };
     return data;
-  },
+  }
 };
 
 export default {
   state,
   mutations,
   actions,
-  getters,
+  getters
 };

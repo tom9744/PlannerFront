@@ -7,21 +7,13 @@ import todolist from "./modules/todo-list.js";
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
-  state: {
+  state: {},
 
-  },
+  mutations: {},
 
-  mutations: {
+  actions: {},
 
-  },
-
-  actions: {
-   
-  },
-
-  getters: {
-
-  },
+  getters: {},
 
   modules: {
     authStore,
@@ -30,4 +22,4 @@ const store = new Vuex.Store({
   }
 });
 
-export default store
+export default store;

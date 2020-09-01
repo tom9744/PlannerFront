@@ -24,8 +24,15 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="indigo lighten-1 white--text" to="/user" exact>돌아가기</v-btn>
-      <v-btn color="indigo lighten-1 white--text" :disabled="!valid" @click="onLogin">로그인</v-btn>
+      <v-btn color="indigo lighten-1 white--text" to="/user" exact
+        >돌아가기</v-btn
+      >
+      <v-btn
+        color="indigo lighten-1 white--text"
+        :disabled="!valid"
+        @click="onLogin"
+        >로그인</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -34,14 +41,14 @@
 export default {
   data() {
     return {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
 
       valid: false,
 
       required(propertyType) {
         return value => !!value || `${propertyType}은 필수 입력 항목입니다.`;
-      },
+      }
     };
   },
   methods: {
@@ -56,5 +63,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

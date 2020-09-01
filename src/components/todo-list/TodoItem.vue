@@ -2,7 +2,7 @@
   <v-container class="py-1">
     <v-row v-for="item in filteredTodos" :key="item.id" align="center">
       <!-- 체크 박스 영역 -->
-      <v-col cols="1" class="py-0">
+      <v-col cols="2" sm="1" class="py-0">
         <v-checkbox
           color="indigo"
           v-model="item.is_complete"
@@ -10,20 +10,20 @@
         ></v-checkbox>
       </v-col>
       <!-- 할일 내용 영역 -->
-      <v-col cols="5">
+      <v-col cols="10" sm="5">
         <p class="mb-0">
           {{ item.title }}
         </p>
       </v-col>
       <!-- 중요도 영역 -->
-      <v-col cols="3" align="end">
+      <v-col cols="6" sm="3">
         <p class="mb-0">
           <span>{{ priorityEmojis[item.importance] }}</span>
           {{ priorityLevel[item.importance] }}
         </p>
       </v-col>
       <!-- 수정, 삭제 버튼 영역 -->
-      <v-col cols="3" align="end">
+      <v-col cols="6" sm="3" align="end">
         <!-- 자신이 작성한 경우에만 수정, 삭제 아이콘 표시 -->
         <div v-if="item.user == userEmail">
           <!-- 다이얼로그에 해당 아이템의 id 값을 props로 넘긴다. -->

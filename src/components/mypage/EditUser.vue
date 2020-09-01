@@ -94,7 +94,7 @@ export default {
 
       this.$http
         .patch(
-          "http://127.0.0.1:8000/api/user/me/edit",
+          "/api/user/me/edit",
           { password: this.password, password_confirm: this.password_confirm },
           { headers: { Authorization: `Bearer ${this.getAccessToken}` } }
         )

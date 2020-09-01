@@ -21,14 +21,14 @@
                 :rules="[required()]"
               ></v-text-field>
             </v-col>
-            <v-col cols="5" class="pt-0">
+            <v-col cols="3" sm="5" class="pt-0">
               <v-text-field
                 v-model="todo.profile"
                 label="작성자"
                 disabled
               ></v-text-field>
             </v-col>
-            <v-col cols="5" class="pt-0">
+            <v-col cols="5" sm="5" class="pt-0">
               <v-select
                 :items="selections"
                 item-value="index"
@@ -93,7 +93,7 @@ export default {
   methods: {
     onOpen() {
       this.$http
-        .get(`http://127.0.0.1:8000/api/plan/bucket-list/${this.itemId}/`, {
+        .get(`/api/plan/bucket-list/${this.itemId}/`, {
           headers: { Authorization: `Bearer ${this.getAccessToken}` }
         })
         .then(response => {
@@ -107,7 +107,7 @@ export default {
     onSubmit() {
       this.$http
         .put(
-          `http://127.0.0.1:8000/api/plan/bucket-list/${this.itemId}/`,
+          `/api/plan/bucket-list/${this.itemId}/`,
           {
             title: this.todo.title,
             importance: this.todo.importance,

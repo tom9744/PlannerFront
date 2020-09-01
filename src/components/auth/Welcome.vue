@@ -12,7 +12,9 @@
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="indigo lighten-1 white--text" to="/" exact>홈페이지 이동하기</v-btn>
+      <v-btn color="indigo lighten-1 white--text" to="/" exact
+        >홈페이지 이동하기</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -27,5 +29,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -31,12 +31,12 @@ export default {
         "수요일",
         "목요일",
         "금요일",
-        "토요일",
+        "토요일"
       ],
 
       currentHour: null,
       currentMinute: null,
-      currentSecond: null,
+      currentSecond: null
     };
   },
   methods: {
@@ -71,8 +71,8 @@ export default {
     timeFormatter(time) {
       // 각 값이 한자리 수인 경우, 앞에 '0'을 추가한다.
       return time < 10 ? `0${time}` : time;
-    },
-  },
+    }
+  }
 };
 </script>
 

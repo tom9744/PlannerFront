@@ -27,7 +27,7 @@ function isRefreshPossible(
 }
 
 const instance = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/user/"
+  baseURL: "https://hrhr-planner.herokuapp.com/api/user/"
 });
 
 const state = {
@@ -41,7 +41,6 @@ const state = {
   userData: null,
 
   // 에러 관련
-  registrationErrorData: null,
   loginErrorData: null
 };
 
@@ -63,11 +62,6 @@ const mutations = {
     state.userData = null;
   },
 
-  // 회원가입 성공/실패 여부 Mutation
-  registrationStatus(state, payload) {
-    state.registrationErrorData = payload;
-  },
-
   // 로그인 성공/실패 여부 Mutation
   loginStatus(state, payload) {
     state.loginErrorData = payload;
@@ -80,32 +74,6 @@ const mutations = {
 };
 
 const actions = {
-  register({ commit }, payload) {
-    instance
-      .post(`register`, payload)
-      .then(response => {
-        commit("registrationStatus", null);
-
-        console.log(response);
-
-        // 회원가입 성공 시, 웰컴 페이지로 리디렉트 한다.
-        router.replace("/user/welcome");
-      })
-      .catch(error => {
-        // 회원가입 오류 시, 서버로부터 반환된 에러 데이터를 가져온다.
-        const errorData = error.response.data;
-        console.log(error.response);
-
-        // Array 형태의 에러 메세지를 파싱한다.
-        let temp = {};
-        for (let field in errorData) {
-          temp[`${field}_error`] = errorData[field][0];
-        }
-        // State에 에러 정보를 저장한다.
-        commit("registrationStatus", temp);
-      });
-  },
-
   login({ commit }, payload) {
     // axios를 통해 URL로 HTTP POST 요청을 보낸다.
     instance
@@ -306,6 +274,9 @@ const getters = {
   },
   isRegistrationFailed(state) {
     return state.registrationErrorData !== null;
+  },
+  getRegistrationErrorData(state) {
+    return state.registrationErrorData;
   },
   isLoginFailed(state) {
     return state.loginErrorData !== null;

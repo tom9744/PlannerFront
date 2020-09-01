@@ -5,7 +5,7 @@
       <!-- 로그인 상태인 경우 표시되는 부분 -->
       <v-list v-if="isLoggedIn">
         <v-list-item
-          v-for="item in drawer.items"
+          v-for="item in drawer.drawerItems"
           :key="item.title"
           link
           :to="item.route"
@@ -66,11 +66,7 @@
       <v-spacer></v-spacer>
 
       <div v-if="isLoggedIn">
-        <v-tooltip 
-          v-for="elem in menu"
-          :key="elem.title"
-          bottom
-        >
+        <v-tooltip v-for="elem in menu" :key="elem.title" bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon :to="elem.route" v-bind="attrs" v-on="on">
               <v-icon>{{ elem.icon }}</v-icon>
@@ -110,31 +106,43 @@ export default {
   computed: {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
-    },
+    }
   },
   methods: {
     onLogout() {
       this.$store.dispatch("logout");
-    },
+    }
   },
   data() {
     return {
       drawer: {
         isOpen: null,
-        items: [
+        drawerItems: [
           { title: "홈", icon: "mdi-home", route: "/" },
           { title: "프로필", icon: "mdi-account-circle", route: "/mypage" },
-          { title: "대시보드", icon: "mdi-view-dashboard", route: "/dashboard" },
-          { title: "투두리스트", icon: "mdi-format-list-checks", route: "/todo-list" },
-        ],
+          {
+            title: "대시보드",
+            icon: "mdi-view-dashboard",
+            route: "/dashboard"
+          },
+          {
+            title: "투두리스트",
+            icon: "mdi-format-list-checks",
+            route: "/todo-list"
+          }
+        ]
       },
       menu: [
-        { title: "투두리스트", icon: "mdi-format-list-checks", route: "/todo-list" },
+        {
+          title: "투두리스트",
+          icon: "mdi-format-list-checks",
+          route: "/todo-list"
+        },
         { title: "대시보드", icon: "mdi-view-dashboard", route: "/dashboard" },
-        { title: "마이페이지", icon: "mdi-account-circle", route: "/mypage" },
-      ],
+        { title: "마이페이지", icon: "mdi-account-circle", route: "/mypage" }
+      ]
     };
-  },
+  }
 };
 </script>
 

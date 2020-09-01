@@ -10,8 +10,12 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="indigo lighten-1 white--text" to="/user/login">로그인</v-btn>
-      <v-btn color="indigo lighten-1 white--text" to="/user/register">회원가입</v-btn>
+      <v-btn color="indigo lighten-1 white--text" to="/user/login"
+        >로그인</v-btn
+      >
+      <v-btn color="indigo lighten-1 white--text" to="/user/register"
+        >회원가입</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -20,5 +24,4 @@
 export default {};
 </script>
 
-<style>
-</style>
+<style></style>

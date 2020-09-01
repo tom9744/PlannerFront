@@ -22,12 +22,18 @@
                 </p>
                 <div class="py-5"></div>
                 <div>
-                  <v-btn to="/wishlist" class="ma-2">
+                  <v-btn to="/todo-list" class="ma-2">
                     <v-icon left>mdi-format-list-checks</v-icon>
+                    TodoList
+                  </v-btn>
+                  <v-btn to="/dashboard" class="ma-2">
+                    <v-icon left>mdi-view-dashboard</v-icon>
                     Dashboard
                   </v-btn>
-                  <v-btn class="ma-2">Button B</v-btn>
-                  <v-btn class="ma-2">Button C</v-btn>
+                  <v-btn to="/mypage" class="ma-2">
+                    <v-icon left>mdi-account-circle</v-icon>
+                    MyPage
+                  </v-btn>
                 </div>
               </v-responsive>
             </v-col>

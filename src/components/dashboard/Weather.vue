@@ -34,7 +34,7 @@
                 <!-- 날씨 정보 이미지 -->
                 <v-img
                   :src="
-                    `http://openweathermap.org/img/wn/${weatherData.iconId}@2x.png`
+                    `https://openweathermap.org/img/wn/${weatherData.iconId}@2x.png`
                   "
                   alt="Weahter image"
                   width="125px"
@@ -73,7 +73,7 @@ import Loading from "./Loading.vue";
 
 export default {
   components: {
-    appLoading: Loading,
+    appLoading: Loading
   },
   props: {
     coords: {
@@ -86,20 +86,20 @@ export default {
     if (this.coords.addressName != null) {
       this.$store.dispatch("getWeather", {
         latitude: this.coords.latitude,
-        longitude: this.coords.longitude,
+        longitude: this.coords.longitude
       });
     }
     // Props로 전될된 데이터가 없는 경우 (undefined) 실행되는 로직.
     else {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           const currentCoords = {
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+            longitude: position.coords.longitude
           };
           this.$store.dispatch("getWeather", currentCoords);
         },
-        (error) => {
+        error => {
           console.log(error);
         }
       );
@@ -110,7 +110,7 @@ export default {
     if (this.coords.addressName != null) {
       this.$store.dispatch("getWeather", {
         latitude: this.coords.latitude,
-        longitude: this.coords.longitude,
+        longitude: this.coords.longitude
       });
     }
   },
@@ -122,8 +122,8 @@ export default {
     // 날씨 정보 데이터
     weatherData() {
       return this.$store.getters.getWeatherDate;
-    },
-  },
+    }
+  }
 };
 </script>
 

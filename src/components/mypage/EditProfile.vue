@@ -119,13 +119,12 @@ export default {
     }
   },
   methods: {
-    onClick() {},
     onSubmit() {
       this.loader = "loading";
 
       this.$http
         .put(
-          "http://127.0.0.1:8000/api/user/me/",
+          "/api/user/me/",
           { nickname: this.nickname },
           {
             headers: {
