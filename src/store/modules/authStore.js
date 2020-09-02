@@ -10,8 +10,6 @@ function isRefreshPossible(
   const accessExpiresIn = new Date(accessTokenExpirationDate) - now;
   const refreshExpiresIn = new Date(refreshTokenExpirationDate) - now;
 
-  console.log(accessExpiresIn, refreshExpiresIn);
-
   // 두 토큰 모두 만료된 경우, 로컬스토리지에서 모든 내용 삭제.
   if (accessExpiresIn < 0 && refreshExpiresIn < 0) {
     localStorage.removeItem("accessToken");
@@ -20,7 +18,9 @@ function isRefreshPossible(
     localStorage.removeItem("refreshTokenExpirationDate");
 
     return false;
-  } else if (accessExpiresIn < 0 && refreshExpiresIn > 0) {
+  }
+  // refresh 토큰이 유요한 경우, true를 반환한다.
+  else if (accessExpiresIn < 0 && refreshExpiresIn > 0) {
     return true;
   }
   return null;
@@ -98,7 +98,7 @@ const actions = {
         );
 
         // State에 저장할 데이터
-        const userData = {
+        const authData = {
           accessToken: data.access,
           refreshToken: data.refresh,
           accessTokenExpirationDate: accessTokenExpirationDate.toString(),
@@ -106,21 +106,24 @@ const actions = {
         };
 
         // mutation 실행
-        commit("login", userData);
+        commit("login", authData);
 
-        localStorage.setItem("accessToken", userData.accessToken);
-        localStorage.setItem("refreshToken", userData.refreshToken);
+        localStorage.setItem("accessToken", authData.accessToken);
+        localStorage.setItem("refreshToken", authData.refreshToken);
         localStorage.setItem(
           "accessTokenExpirationDate",
-          userData.accessTokenExpirationDate
+          authData.accessTokenExpirationDate
         );
         localStorage.setItem(
           "refreshTokenExpirationDate",
-          userData.refreshTokenExpirationDate
+          authData.refreshTokenExpirationDate
         );
 
         // 로딩 상태를 false 바꾼다.
         commit("fetchLoading", false);
+
+        // 로그인 에러 메세지를 초기화한다.
+        commit("fetchLoginErrorMsg", null);
 
         // 로그인 성공 시, 홈 페이지로 리디렉트한다.
         router.replace("/");
@@ -149,7 +152,9 @@ const actions = {
   },
 
   logout({ commit }) {
+    // State에서 유저관련 정보를 모두 지운다.
     commit("logout");
+    commit("fetchUser", null);
 
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
@@ -181,27 +186,29 @@ const actions = {
       return;
     }
 
+    // Refresh 토큰이 유효하고 Access 토큰이 갱신 가능한지 확인한다.
     const flag = await isRefreshPossible(
       accessTokenExpirationDate,
       refreshTokenExpirationDate
     );
 
-    console.log(flag);
-
+    // 두 토큰이 모두 만료된 경우
     if (flag == false) {
+      alert("로그인 정보가 만료되었습니다. 다시 로그인해주세요!");
       return;
     }
 
-    const userData = {
+    const authData = {
       accessToken,
       refreshToken,
       accessTokenExpirationDate,
       refreshTokenExpirationDate
     };
 
+    // 두 토큰 모두 유효한 경우
     if (flag == null) {
       // 유저 데이터로 로그인.
-      commit("login", userData);
+      commit("login", authData);
 
       // 자동 로그아웃 타이머를 시작한다.
       dispatch("startLogoutTimer");
@@ -211,6 +218,7 @@ const actions = {
       return;
     }
 
+    // access 토큰 갱신이 필요한 경우
     await instance
       .post("refresh", {
         refresh: refreshToken
@@ -224,13 +232,13 @@ const actions = {
         );
 
         // 인증 정보를 업데이트한다.
-        userData.accessToken = newAccessToken;
-        userData.accessTokenExpirationDate = newAccessTokenExpirationDate.toString();
+        authData.accessToken = newAccessToken;
+        authData.accessTokenExpirationDate = newAccessTokenExpirationDate.toString();
 
-        localStorage.setItem("accessToken", userData.accessToken);
+        localStorage.setItem("accessToken", authData.accessToken);
         localStorage.setItem(
           "accessTokenExpirationDate",
-          userData.accessTokenExpirationDate
+          authData.accessTokenExpirationDate
         );
 
         console.log("accessToken Succesfully Updated!");
@@ -242,7 +250,7 @@ const actions = {
       });
 
     // 유저 데이터로 로그인.
-    commit("login", userData);
+    commit("login", authData);
 
     // 자동 로그아웃 타이머를 시작한다.
     dispatch("startLogoutTimer");
@@ -254,11 +262,6 @@ const actions = {
     // Refresh 토큰 만료까지 남은 시간 계산
     const refreshTimetoExpire =
       new Date(state.refreshTokenExpirationDate) - new Date();
-
-    console.log(
-      "Time to get automatically logged out: ",
-      refreshTimetoExpire / 1000 + "초"
-    );
 
     setTimeout(() => {
       dispatch("logout");
