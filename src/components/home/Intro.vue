@@ -9,9 +9,9 @@
             Planner App.<br />Plan out your hangouts.
           </p>
           <p class="text-h6 font-weight-light text-center text-md-left">
-            플래너는 일정관리 웹 어플리케이션입니다. <br />
-            간단하게 일정을 등록하고 친구들과 공유하세요. <br />
-            아직 많은 기능은 없지만, 계속 추가되고 있습니다. :)
+            플래너는 일정관리 웹 어플리케이션입니다. 간단하게 일정 또는 하고싶은
+            일을 등록하고 친구들과 공유하세요. 아직 많은 기능은 없지만, 계속
+            추가되고 있습니다. 기대해주세요!
           </p>
           <v-row class="my-6">
             <!-- 버튼은 xs 2개, sm 4개, md 이상 자동 정렬 -->

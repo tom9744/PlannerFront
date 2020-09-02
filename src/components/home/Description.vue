@@ -21,8 +21,9 @@
         <v-col
           v-for="logo in techLogos"
           :key="logo.name"
-          class="mx-auto"
-          cols="12"
+          class="mx-auto my-6"
+          align="center"
+          cols="6"
           sm="auto"
         >
           <v-img :src="logo.imgSrc" max-height="300px" max-width="175px">
@@ -42,7 +43,8 @@ export default {
       techLogos: [
         { name: "Python", imgSrc: require("@/assets/python.svg") },
         { name: "Django", imgSrc: require("@/assets/django.svg") },
-        { name: "VueJS", imgSrc: require("@/assets/vue-js.svg") }
+        { name: "VueJS", imgSrc: require("@/assets/vue-js.svg") },
+        { name: "JavaScript", imgSrc: require("@/assets/javascript.svg") }
       ]
     };
   }

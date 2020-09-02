@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto elevation-12" max-width="400">
     <v-toolbar color="indigo lighten-1" dark flat>
-      <v-toolbar-title>비밀번호 변경</v-toolbar-title>
+      <v-toolbar-title>아바타 변경</v-toolbar-title>
     </v-toolbar>
 
     <v-card-text>

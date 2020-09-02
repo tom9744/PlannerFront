@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="getUserData" class="mx-auto elevation-12" max-width="400">
+  <v-card class="mx-auto elevation-12" max-width="400">
     <v-toolbar color="indigo lighten-1" dark flat>
       <v-toolbar-title>사용자 프로필</v-toolbar-title>
     </v-toolbar>
@@ -8,12 +8,12 @@
       <v-row>
         <v-col cols="3" align="center" class="pa-1">
           <v-avatar color="grey darken-3" size="52px">
-            <img class="elevation-12" :src="getUserData.avatar" />
+            <img class="elevation-12" :src="userData.avatar" />
           </v-avatar>
         </v-col>
         <v-col cols="9" align-self="center" class="px-1 py-3">
           <p class="text-h6 font-weight-bold mb-0">
-            {{ getUserData.nickname }}님, 환영합니다!
+            {{ userData.nickname }}님, 환영합니다!
           </p>
         </v-col>
       </v-row>
@@ -23,16 +23,16 @@
 
     <v-card-text>
       <p class="subtitle-1 font-weight-bold indigo--text">프로필 정보</p>
-      <p class="mb-0">별명: {{ getUserData.nickname }}</p>
+      <p class="mb-0">별명: {{ userData.nickname }}</p>
     </v-card-text>
 
     <v-divider></v-divider>
 
     <v-card-text>
       <p class="subtitle-1 font-weight-bold indigo--text">개인 정보</p>
-      <p>계정: {{ getUserData.email }}</p>
-      <p>이름: {{ getUserData.name }}</p>
-      <p class="mb-0">생년월일: {{ getUserData.birthday }}</p>
+      <p>계정: {{ userData.email }}</p>
+      <p>이름: {{ userData.name }}</p>
+      <p class="mb-0">생년월일: {{ userData.birthday }}</p>
     </v-card-text>
 
     <v-divider></v-divider>
@@ -48,14 +48,9 @@
 
 <script>
 export default {
-  created() {
-    this.$store.dispatch("fetchUser");
-  },
   computed: {
-    getUserData() {
-      return !this.$store.getters.getUserData
-        ? false
-        : this.$store.getters.getUserData;
+    userData() {
+      return this.$store.getters["userInfo/userInformation"];
     }
   },
   data() {

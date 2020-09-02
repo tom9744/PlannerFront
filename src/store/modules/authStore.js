@@ -62,7 +62,6 @@ const mutations = {
     state.refreshToken = null;
     state.accessTokenExpirationDate = null;
     state.refreshTokenExpirationDate = null;
-    state.userData = null;
   },
 
   // 로그인 성공/실패 여부 Mutation
@@ -72,11 +71,6 @@ const mutations = {
 
   fetchLoading(state, payload) {
     state.isAuthLoading = payload;
-  },
-
-  // 유저 프로필 데이터 Mutation
-  fetchUser(state, payload) {
-    state.userData = payload;
   }
 };
 
@@ -154,7 +148,6 @@ const actions = {
   logout({ commit }) {
     // State에서 유저관련 정보를 모두 지운다.
     commit("logout");
-    commit("fetchUser", null);
 
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
@@ -266,33 +259,6 @@ const actions = {
     setTimeout(() => {
       dispatch("logout");
     }, refreshTimetoExpire);
-  },
-
-  fetchUser({ commit, state }) {
-    instance
-      .get("me/", {
-        headers: {
-          Authorization: `Bearer ${state.accessToken}`
-        }
-      })
-      .then(response => {
-        const userData = {};
-
-        // 'user' 객체에서 각각의 요소를 추출한다.
-        for (let each in response.data.user) {
-          if (each == "id") continue;
-          userData[`${each}`] = response.data.user[each];
-        }
-
-        userData["nickname"] = response.data.nickname;
-        userData["avatar"] = response.data.avatar;
-
-        // Mutation 실행
-        commit("fetchUser", userData);
-      })
-      .catch(error => {
-        console.log(error);
-      });
   }
 };
 
@@ -308,12 +274,6 @@ const getters = {
   // 로그인 에러 메세지 반환
   getLoginErrorMsg(state) {
     return state.loginErrorMsg;
-  },
-  getUserData(state) {
-    return state.userData;
-  },
-  getUserEmail(state, getters) {
-    return getters.getUserData.email;
   },
   getAccessToken(state) {
     return state.accessToken;
