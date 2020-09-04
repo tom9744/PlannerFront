@@ -12,7 +12,6 @@
         <h3>인증 절차가 진행중입니다.</h3>
         <p>잠시만 기다려주시면 자동으로 화면이 넘어갑니다.</p>
       </div>
-
       <div>
         <h3 v-if="isActivated == true">계정 인증이 완료되었습니다.</h3>
         <h3 v-if="isActivated == false">이미 인증된 계정입니다.</h3>
@@ -33,7 +32,7 @@
 export default {
   data() {
     return {
-      isActivated: false,
+      isActivated: null,
 
       resonpseMsg: ""
     };

@@ -58,7 +58,7 @@ export default {
       return this.$store.getters.filteredTodos;
     },
     userEmail() {
-      return this.$store.getters.getUserEmail;
+      return this.$store.getters["userInfo/userEmail"];
     }
   },
   data() {

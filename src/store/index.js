@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import authStore from "./modules/authStore.js";
-import userInfo from "./modules/userInfo.js";
+import mypage from "./modules/mypage.js";
 import weather from "./modules/weather.js";
 import todolist from "./modules/todo-list.js";
 
@@ -18,7 +18,7 @@ const store = new Vuex.Store({
 
   modules: {
     authStore,
-    userInfo,
+    mypage,
     weather,
     todolist
   }

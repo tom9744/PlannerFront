@@ -15,7 +15,7 @@
 <script>
 export default {
   created() {
-    this.$store.dispatch("userInfo/getUserInfo");
+    this.$store.dispatch("mypage/getUserInfo");
   }
 };
 </script>

@@ -19,15 +19,11 @@
             <!-- 아바타 이미지 부분 -->
             <v-avatar size="72px" color="grey lighten-1" class="elevation-6">
               <!-- 유저 데이터에 있는 아바타 이미지 -->
-              <v-img
-                v-if="imgURL == null && userData.avatar != null"
-                :src="userData.avatar"
-              />
-              <!-- 아바타 변경 시 미리보기 이미지 -->
-              <v-img v-if="imgURL != null" :src="imgURL" />
+              <v-img v-if="userInfo.avatar != null" :src="userInfo.avatar" />
             </v-avatar>
           </v-col>
           <v-col cols="12" align="center" class="pt-0">
+            <!-- 프로필 변경 버튼 -->
             <span
               class="body-2 indigo--text"
               style="cursor: pointer"
@@ -35,6 +31,7 @@
             >
               프로필 사진 변경
             </span>
+            <!-- 실제 파일 인풋 부분 -->
             <input
               v-show="false"
               type="file"
@@ -54,7 +51,7 @@
             persistent-hint
             solo
             dense
-            :label="this.userData.nickname"
+            :label="this.userInfo.nickname"
             :rules="[
               required('별명'),
               minLength('별명', 2),
@@ -94,7 +91,7 @@
       </v-card-actions>
     </v-card>
 
-    <!-- 스낵바 메세지 -->
+    <!-- 스낵바 -->
     <v-snackbar v-model="snackbar">
       <span>{{ snackbarMsg }}</span>
 
@@ -113,52 +110,49 @@ export default {
     getAccessToken() {
       return this.$store.getters.getAccessToken;
     },
-    userData() {
-      return this.$store.getters["userInfo/userInformation"];
+    userInfo() {
+      return this.$store.getters["mypage/userInformation"];
     },
     nicknameLoading: {
       get() {
-        return this.$store.getters["userInfo/isNicknameLoading"];
+        return this.$store.getters["mypage/progCircle"];
       },
       // Vuex State를 v-model에 사용하기 위해서는 setter를 설정해야한다.
       set(newValue) {
-        this.$store.commit("userInfo/fetchNicknameLoading", newValue);
+        this.$store.commit("mypage/fetchProgCircle", newValue);
       }
     },
     avatarLoading: {
       get() {
-        return this.$store.getters["userInfo/isAvatarLoading"];
+        return this.$store.getters["mypage/progBar"];
       },
       // Vuex State를 v-model에 사용하기 위해서는 setter를 설정해야한다.
       set(newValue) {
-        this.$store.commit("userInfo/fetchAvatarLoading", newValue);
+        this.$store.commit("mypage/fetchProgBar", newValue);
       }
     },
     snackbar: {
       get() {
-        return this.$store.getters["userInfo/showSnackbar"];
+        return this.$store.getters["mypage/showSnackbar"];
       },
       // Vuex State를 v-model에 사용하기 위해서는 setter를 설정해야한다.
       set() {
-        this.$store.commit("userInfo/fetchUserInfoSnackbar", {
+        this.$store.commit("mypage/fetchSnackbar", {
           flag: false,
           message: null
         });
       }
     },
     snackbarMsg() {
-      return this.$store.getters["userInfo/snackbarMsg"];
+      return this.$store.getters["mypage/snackbarMsg"];
     }
   },
   data() {
     return {
-      nickname: "",
-
       // Form 유효성 플래그
       valid: false,
 
-      // 변경된 아바타 이미지 미리보기 URL
-      imgURL: null,
+      nickname: "",
 
       required(propertyType) {
         return value => !!value || `${propertyType}은 공백일 수 없습니다.`;
@@ -177,7 +171,7 @@ export default {
   },
   methods: {
     onNicknameChange() {
-      this.$store.dispatch("userInfo/changeNickname", {
+      this.$store.dispatch("mypage/changeNickname", {
         nickname: this.nickname
       });
     },
@@ -189,7 +183,7 @@ export default {
       // 이벤트 객체로부터 파일 정보를 가져온다.
       const file = event.target.files[0];
 
-      this.$store.dispatch("userInfo/changeAvatar", {
+      this.$store.dispatch("mypage/changeAvatar", {
         file
       });
     }

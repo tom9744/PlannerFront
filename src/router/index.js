@@ -68,7 +68,7 @@ const routes = [
     component: TodoList,
     meta: { requiresAuth: true },
     beforeEnter: async (to, from, next) => {
-      await store.dispatch("userInfo/getUserInfo");
+      await store.dispatch("mypage/getUserInfo");
 
       next();
     }
