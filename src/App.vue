@@ -65,7 +65,7 @@
 
       <v-spacer></v-spacer>
 
-      <div v-if="isLoggedIn">
+      <div v-if="isLoggedIn" class="d-none d-sm-flex">
         <v-tooltip v-for="elem in menu" :key="elem.title" bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon :to="elem.route" v-bind="attrs" v-on="on">

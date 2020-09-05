@@ -29,7 +29,6 @@ const mutations = {
 
 const actions = {
   filterTodos({ state, commit }, payload) {
-    console.log(payload);
     let filteredTodos = [];
 
     switch (payload) {
@@ -70,7 +69,7 @@ const actions = {
         // 받아온 내용을 State에 저장한다.
         commit("fetchTodo", response.data);
 
-        // 완료 표시된 항목의 개수를 구한다.
+        // 현재 필터링 플래그에 맞는 리스트를 출력한다.
         dispatch("filterTodos", state.currentFilter);
 
         // 완료 표시된 항목의 개수를 구한다.
@@ -81,7 +80,7 @@ const actions = {
       });
   },
 
-  addTodo({ dispatch }, payload) {
+  addTodo({ state, commit, dispatch }, payload) {
     // 새로운 버켓리스트 항목을 서버 데이터베이스에 추가한다.
     instance
       .post(
@@ -89,16 +88,21 @@ const actions = {
         { title: payload.title, importance: payload.importance },
         { headers: { Authorization: `Bearer ${authStore.state.accessToken}` } }
       )
-      .then(() => {
-        // 변경된 내용을 State에 반영하기 위해 호출한다.
-        dispatch("getAllTodos");
+      .then(response => {
+        let todos = state.todos; // 추가된 할일 정보
+        todos.unshift(response.data); // 배열의 맨 앞에 추가
+
+        commit("fetchTodo", todos); // State에 반경
+
+        // 현재 필터링 플래그에 맞는 리스트를 출력한다.
+        dispatch("filterTodos", state.currentFilter);
       })
       .catch(() => {
         alert("항목을 추가하는데 실패했습니다.");
       });
   },
 
-  toggleTodo({ dispatch }, payload) {
+  toggleTodo({ state, commit, dispatch }, payload) {
     instance
       // 우선 주어진 ID 값으로 서버에 GET 요청을 보낸다.
       .get(`bucket-list/${payload.id}/`, {
@@ -117,9 +121,23 @@ const actions = {
               }
             }
           )
-          .then(() => {
+          .then(response => {
             // 변경된 내용을 State에 반영하기 위해 호출한다.
-            dispatch("getAllTodos");
+            const toggledTodo = response.data;
+            let todos = state.todos;
+
+            const toggledIndex = todos.findIndex(
+              todo => todo.id == toggledTodo.id
+            );
+            todos[toggledIndex] = toggledTodo;
+
+            commit("fetchTodo", todos);
+
+            // 현재 필터링 플래그에 맞는 리스트를 출력한다.
+            dispatch("filterTodos", state.currentFilter);
+
+            // 완료 표시된 항목의 개수를 구한다.
+            dispatch("countCompleted");
           })
           .catch(() => {
             alert("할일 항목을 수정하는데 실패하였습니다!");
@@ -130,14 +148,25 @@ const actions = {
       });
   },
 
-  deleteTodo({ dispatch }, payload) {
+  deleteTodo({ state, commit, dispatch }, payload) {
     instance
       .delete(`bucket-list/${payload.id}/`, {
         headers: { Authorization: `Bearer ${authStore.state.accessToken}` }
       })
       .then(() => {
-        // 변경된 내용을 State에 반영하기 위해 호출한다.
-        dispatch("getAllTodos");
+        let todos = state.todos;
+
+        const deletedIndex = todos.findIndex(todo => todo.id == payload.id);
+
+        // 삭제된 할일을 State에서 제거한다.
+        todos.splice(deletedIndex, 1);
+        commit("fetchTodo", todos);
+
+        // 현재 필터링 플래그에 맞는 리스트를 출력한다.
+        dispatch("filterTodos", state.currentFilter);
+
+        // 완료 표시된 항목의 개수를 구한다.
+        dispatch("countCompleted");
       })
       .catch(() => {
         alert("해당 항목을 삭제하는데 실패했습니다.");

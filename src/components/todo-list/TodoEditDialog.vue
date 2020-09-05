@@ -23,7 +23,7 @@
             </v-col>
             <v-col cols="3" sm="5" class="pt-0">
               <v-text-field
-                v-model="todo.profile"
+                v-model="nickname"
                 label="작성자"
                 disabled
               ></v-text-field>
@@ -83,7 +83,7 @@ export default {
         { index: 3, priorityEmojis: "😊 좋아" },
         { index: 4, priorityEmojis: "😍 최고" }
       ],
-      previousTitle: "",
+      nickname: null,
       todo: {},
       required() {
         return value => !!value || `어떠한 내용도 입력하지 않았습니다.`;
@@ -97,7 +97,7 @@ export default {
           headers: { Authorization: `Bearer ${this.getAccessToken}` }
         })
         .then(response => {
-          this.previousTitle = response.data.title;
+          this.nickname = response.data.profile.nickname;
           this.todo = response.data;
         })
         .catch(error => {

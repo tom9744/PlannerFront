@@ -10,19 +10,19 @@
       <v-row align="center" justify="center" class="mb-6">
         <v-col cols="12" align="center">
           <!-- 현재 시각 컴포넌트 -->
-          <wishlist-time></wishlist-time>
+          <dashboard-time></dashboard-time>
         </v-col>
       </v-row>
 
       <v-row align="center" justify="center">
         <v-col cols="12" sm="8" md="6" lg="4">
           <!-- 현재 날씨 정보 컴포넌트 -->
-          <wishlistWeather :coords="getCoords"></wishlistWeather>
+          <dashboardWeather :coords="getCoords"></dashboardWeather>
         </v-col>
 
         <v-col cols="12" sm="8" md="6" lg="4">
           <!-- 날씨 정보 검색창 컴포넌트 -->
-          <wishlistSearch></wishlistSearch>
+          <dashboardSearch></dashboardSearch>
         </v-col>
       </v-row>
     </v-container>
@@ -38,9 +38,9 @@ import Search from "../components/dashboard/Search.vue";
 
 export default {
   components: {
-    wishlistTime: Time,
-    wishlistWeather: Weather,
-    wishlistSearch: Search
+    dashboardTime: Time,
+    dashboardWeather: Weather,
+    dashboardSearch: Search
   },
   data() {
     return {
@@ -50,7 +50,7 @@ export default {
   computed: {
     // 사용자의 검색 여부를 나타내는 플래그
     isSubmitted() {
-      const coords = this.$store.getters.getCoordsData;
+      const coords = this.$store.getters["weather/getCoordsData"];
 
       if (coords.latitude == null || coords.longitude == null) {
         return false;
@@ -59,7 +59,7 @@ export default {
       }
     },
     getCoords() {
-      const coords = this.$store.getters.getCoordsData;
+      const coords = this.$store.getters["weather/getCoordsData"];
       return {
         addressName: coords.addressName,
         latitude: coords.latitude,

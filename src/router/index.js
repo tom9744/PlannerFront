@@ -17,7 +17,7 @@ const EditProfile = () => import("../components/mypage/EditProfile.vue");
 const EditUser = () => import("../components/mypage/EditUser.vue");
 // Wishlist 관련 컴포넌트
 import Dashboard from "../views/Dashboard.vue";
-import TodoList from "../views/TodoList.vue";
+import Todo from "../views/Todo.vue";
 
 Vue.use(VueRouter);
 
@@ -65,7 +65,7 @@ const routes = [
   {
     path: "/todo-list",
     name: "TodoList",
-    component: TodoList,
+    component: Todo,
     meta: { requiresAuth: true },
     beforeEnter: async (to, from, next) => {
       await store.dispatch("mypage/getUserInfo");

@@ -47,7 +47,7 @@ export default {
   methods: {
     onClick() {
       // 사용자가 입력한 정보에 해당하는 좌표값을 구한다.
-      this.$store.dispatch("getCoords", this.queryLocation);
+      this.$store.dispatch("weather/getCoords", this.queryLocation);
     }
   }
 };

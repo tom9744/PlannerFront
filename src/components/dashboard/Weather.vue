@@ -81,10 +81,9 @@ export default {
     }
   },
   created() {
-    console.log(this.coords);
     // Props로 전달된 데이터가 있는 경우 실행되는 로직.
     if (this.coords.addressName != null) {
-      this.$store.dispatch("getWeather", {
+      this.$store.dispatch("weather/getWeather", {
         latitude: this.coords.latitude,
         longitude: this.coords.longitude
       });
@@ -97,9 +96,10 @@ export default {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
           };
-          this.$store.dispatch("getWeather", currentCoords);
+          this.$store.dispatch("weather/getWeather", currentCoords);
         },
         error => {
+          alert("현재 위치 정보를 가져올 수 없습니다.");
           console.log(error);
         }
       );
@@ -108,7 +108,7 @@ export default {
   beforeUpdate() {
     // 컴포넌트 내용이 업데이트 되는 경우 실행되는 로직
     if (this.coords.addressName != null) {
-      this.$store.dispatch("getWeather", {
+      this.$store.dispatch("weather/getWeather", {
         latitude: this.coords.latitude,
         longitude: this.coords.longitude
       });
@@ -117,11 +117,11 @@ export default {
   computed: {
     // 로딩 완료 여부 플래그
     isLoading() {
-      return this.$store.getters.getStatus;
+      return this.$store.getters["weather/getStatus"];
     },
     // 날씨 정보 데이터
     weatherData() {
-      return this.$store.getters.getWeatherDate;
+      return this.$store.getters["weather/getWeatherDate"];
     }
   }
 };
