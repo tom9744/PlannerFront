@@ -87,7 +87,7 @@ export default {
         alert("어떠한 내용도 입력되지 않아 등록할 수 없습니다!");
         return;
       }
-      this.$store.dispatch("addTodo", {
+      this.$store.dispatch("todolist/addTodo", {
         title: this.title,
         importance: this.importance
       });

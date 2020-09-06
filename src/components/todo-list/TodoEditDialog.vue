@@ -21,7 +21,7 @@
                 :rules="[required()]"
               ></v-text-field>
             </v-col>
-            <v-col cols="3" sm="5" class="pt-0">
+            <v-col cols="5" sm="5" class="pt-0">
               <v-text-field
                 v-model="nickname"
                 label="작성자"
@@ -37,12 +37,14 @@
                 label="우선 순위"
               ></v-select>
             </v-col>
-            <v-checkbox
-              v-model="todo.is_complete"
-              class="mx-auto"
-              color="indigo lighten-1"
-              label="완료"
-            ></v-checkbox>
+            <v-col cols="2" sm="2" class="pt-0">
+              <v-checkbox
+                v-model="todo.is_complete"
+                class="mx-auto"
+                color="indigo lighten-1"
+                :label="checkboxLabel"
+              ></v-checkbox>
+            </v-col>
           </v-row>
         </v-form>
       </v-card-text>
@@ -70,6 +72,15 @@ export default {
   computed: {
     getAccessToken() {
       return this.$store.getters.getAccessToken;
+    },
+    checkboxLabel() {
+      // Breakpoint에 따른 truncate 적용 최대 길이 설정
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return "";
+        default:
+          return "완료";
+      }
     }
   },
   data() {
@@ -115,10 +126,9 @@ export default {
           },
           { headers: { Authorization: `Bearer ${this.getAccessToken}` } }
         )
-        .then(response => {
+        .then(() => {
           // 변경 사항을 State에 반영하기위해 호출한다.
-          console.log(response);
-          // this.$store.dispatch("getAllTodos");
+          this.$store.dispatch("todolist/getAllTodos");
           // 다이얼로그를 닫는다.
           this.dialog = false;
         })

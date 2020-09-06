@@ -1,5 +1,5 @@
 <template>
-  <v-row class="mx-auto py-2" align="center">
+  <v-row class="mx-auto" align="center">
     <v-progress-linear
       absolute
       top
@@ -10,7 +10,7 @@
     <v-col
       cols="12"
       sm="6"
-      class="text-center text-sm-left d-none d-sm-flex pl-0"
+      class="text-center text-sm-left hidden-xs-only px-0"
     >
       <span class="indigo--text text-h6 text-weight-light">
         총 {{ numOfInProcess }}개의 대기중 항목

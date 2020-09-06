@@ -8,6 +8,7 @@ const instance = axios.create({
 const state = {
   todos: [],
   filteredTodos: [],
+
   todoDetail: {},
 
   currentFilter: "전체",
@@ -86,47 +87,33 @@ const actions = {
   },
   toggleTodo({ state, commit, dispatch }, payload) {
     instance
-      // 우선 주어진 ID 값으로 서버에 GET 요청을 보낸다.
-      .get(`bucket-list/${payload.id}/`, {
-        headers: { Authorization: `Bearer ${authStore.state.accessToken}` }
-      })
+      .patch(
+        `bucket-list/${payload.id}/`,
+        { is_complete: payload.newValue }, // 현재 is_complete 값과 반대되는 값으로 수정한다.
+        {
+          headers: {
+            Authorization: `Bearer ${authStore.state.accessToken}`
+          }
+        }
+      )
       .then(response => {
-        const todo = response.data; // 응답받은 데이터에서 todo 정보 추출.
+        // 변경된 내용을 State에 반영하기 위해 호출한다.
+        const toggledTodo = response.data;
+        let todos = state.todos;
 
-        instance
-          .patch(
-            `bucket-list/${payload.id}/`,
-            { is_complete: !todo.is_complete }, // 현재 is_complete 값과 반대되는 값으로 수정한다.
-            {
-              headers: {
-                Authorization: `Bearer ${authStore.state.accessToken}`
-              }
-            }
-          )
-          .then(response => {
-            // 변경된 내용을 State에 반영하기 위해 호출한다.
-            const toggledTodo = response.data;
-            let todos = state.todos;
+        const toggledIndex = todos.findIndex(todo => todo.id == toggledTodo.id);
+        todos[toggledIndex] = toggledTodo;
 
-            const toggledIndex = todos.findIndex(
-              todo => todo.id == toggledTodo.id
-            );
-            todos[toggledIndex] = toggledTodo;
+        commit("fetchTodo", todos);
 
-            commit("fetchTodo", todos);
+        // 현재 필터링 플래그에 맞는 리스트를 출력한다.
+        dispatch("filterTodos", state.currentFilter);
 
-            // 현재 필터링 플래그에 맞는 리스트를 출력한다.
-            dispatch("filterTodos", state.currentFilter);
-
-            // 완료 표시된 항목의 개수를 구한다.
-            dispatch("countCompleted");
-          })
-          .catch(() => {
-            alert("할일 항목을 수정하는데 실패하였습니다!");
-          });
+        // 완료 표시된 항목의 개수를 구한다.
+        dispatch("countCompleted");
       })
-      .catch(error => {
-        dispatch("errorHandler", error);
+      .catch(() => {
+        alert("할일 항목을 수정하는데 실패하였습니다!");
       });
   },
   deleteTodo({ state, commit, dispatch }, payload) {
@@ -157,8 +144,9 @@ const actions = {
   /* 
     Todo List Helper Functions 
     1. filterTodos    : ƒ() 필터 설정에 알맞는 할일 배열 State 반영
-    2. countCompleted : ƒ() 완료된 할일 개수 계산
-    3. errorHandler   : ƒ() Axios 처리에서 발생한 오류 처리
+    2. getTodoDetail  : ƒ() 할일 배열에서 특정 항목 탐색
+    3. countCompleted : ƒ() 완료된 할일 개수 계산
+    4. errorHandler   : ƒ() Axios 처리에서 발생한 오류 처리
   */
   filterTodos({ state, commit }, payload) {
     let filteredTodos = [];
@@ -205,6 +193,7 @@ const actions = {
       }
     }
 
+    // 일치하는 항목을 찾지 못한 경우 경고창 출력
     alert("해당 할일 목록을 찾을 수 없습니다");
   },
   countCompleted({ state, commit }) {
@@ -220,6 +209,7 @@ const actions = {
     commit("fetchCount", counter);
   },
   errorHandler(error) {
+    console.log(error);
     const errorStatus = error.response.status;
 
     // Bad Request (400)

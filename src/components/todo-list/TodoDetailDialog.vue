@@ -6,7 +6,7 @@
         v-bind="attrs"
         v-on="on"
         @click="onOpen"
-        class="hidden-xs-only ml-2 mb-0 text-truncate"
+        class="ml-2 mb-0 text-truncate"
         :style="`max-width: ${maxLength}px;`"
       >
         {{ itemTitle }}
@@ -104,12 +104,10 @@
 export default {
   props: {
     itemId: Number,
-    itemTitle: String
+    itemTitle: String,
+    needIcons: Boolean
   },
   computed: {
-    getAccessToken() {
-      return this.$store.getters.getAccessToken;
-    },
     todoDetail() {
       return this.$store.getters["todolist/todoDetail"];
     },
@@ -117,15 +115,13 @@ export default {
       // Breakpoint에 따른 truncate 적용 최대 길이 설정
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
-          return 100;
+          return this.needIcons ? 140 : 200;
         case "sm":
-          return 180;
+          return this.needIcons ? 200 : 250;
         case "md":
-          return 300;
-        case "lg":
-          return 400;
+          return this.needIcons ? 350 : 400;
         default:
-          return 250;
+          return this.needIcons ? 400 : 500;
       }
     }
   },
@@ -140,41 +136,12 @@ export default {
         "기회가 있으면 꼭 할래요",
         "절대필수! 꼭 하고 말거에요"
       ],
-      priorityEmojis: ["😭", "🙁", "😐", "😊", "😍"],
-
-      required() {
-        return value => !!value || `어떠한 내용도 입력하지 않았습니다.`;
-      }
+      priorityEmojis: ["😭", "🙁", "😐", "😊", "😍"]
     };
   },
   methods: {
     onOpen() {
       this.$store.dispatch("todolist/getTodoDetail", this.itemId);
-    },
-    onSubmit() {
-      this.$http
-        .put(
-          `/api/plan/bucket-list/${this.itemId}/`,
-          {
-            title: this.todo.title,
-            importance: this.todo.importance,
-            is_complete: this.todo.is_complete
-          },
-          { headers: { Authorization: `Bearer ${this.getAccessToken}` } }
-        )
-        .then(() => {
-          // 변경 사항을 State에 반영하기위해 호출한다.
-          this.$store.dispatch("getAllTodos");
-          // 다이얼로그를 닫는다.
-          this.dialog = false;
-        })
-        .catch(error => {
-          alert("할일 : " + error.response.data.title);
-
-          if (error.response.status == 401) {
-            alert("로그인 시간이 만료되었습니다. 새로고침 후 이용해주세요.");
-          }
-        });
     }
   }
 };
