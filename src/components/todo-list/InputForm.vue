@@ -28,29 +28,12 @@
                   class="mb-2"
                 />
                 <v-slider
-                  class="d-none d-sm-flex"
                   v-model="importance"
                   :thumb-size="28"
                   thumb-color="indigo lighten-1"
                   thumb-label="always"
                   :tick-labels="importanceLevel"
-                  label="얼마나 중요한 일인가요?"
-                  color="white"
-                  step="1"
-                  :max="4"
-                  dark
-                >
-                  <template v-slot:thumb-label="{ value }">
-                    {{ satisfactionEmojis[value] }}
-                  </template>
-                </v-slider>
-                <v-slider
-                  class="d-flex d-sm-none"
-                  v-model="importance"
-                  :thumb-size="28"
-                  thumb-color="indigo lighten-1"
-                  thumb-label="always"
-                  :tick-labels="importanceLevel"
+                  :label="sliderLabel"
                   color="white"
                   step="1"
                   :max="4"
@@ -64,7 +47,7 @@
             </v-col>
           </v-row>
 
-          <v-row align="center" justify="center">
+          <v-row>
             <v-col cols="12" align="center">
               <v-btn color="indigo lighten-1" @click="onClick" fab dark>
                 <v-icon dark>mdi-plus</v-icon>
@@ -79,6 +62,17 @@
 
 <script>
 export default {
+  computed: {
+    sliderLabel() {
+      // Breakpoint에 따른 truncate 적용 최대 길이 설정
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return "중요도";
+        default:
+          return "얼마나 중요한 일인가요?";
+      }
+    }
+  },
   data() {
     return {
       title: "",

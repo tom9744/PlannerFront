@@ -6,7 +6,7 @@
         <v-tooltip left>
           <template v-slot:activator="{ on, attrs }">
             <v-avatar
-              size="36px"
+              size="42px"
               color="grey lighten-1"
               v-bind="attrs"
               v-on="on"
@@ -39,8 +39,8 @@
               class="shrink my-0 hidden-sm-and-up"
               color="indigo"
               :label="
-                item.title.length > 12
-                  ? `${item.title.substring(0, 12)}...`
+                item.title.length > 10
+                  ? `${item.title.substring(0, 10)}...`
                   : item.title
               "
               v-model="item.is_complete"
@@ -111,10 +111,10 @@ export default {
       return this.$store.getters["mypage/userEmail"];
     },
     todos() {
-      return this.$store.getters.todos;
+      return this.$store.getters["todolist/todos"];
     },
     filteredTodos() {
-      return this.$store.getters.filteredTodos;
+      return this.$store.getters["todolist/filteredTodos"];
     }
   },
   data() {
@@ -126,11 +126,11 @@ export default {
   methods: {
     onToggle(id) {
       // 클릭된 체크박스에 해당하는 ID와 일치하는 투두리스트 항목의 is_complete 항목을 토글한다.
-      this.$store.dispatch("toggleTodo", { id: id });
+      this.$store.dispatch("todolist/toggleTodo", { id: id });
     },
     onDelete(id) {
       // 클릭된 체크박스가 위치한 항목의 ID에 해당하는 내용을 수정한다.
-      this.$store.dispatch("deleteTodo", { id: id });
+      this.$store.dispatch("todolist/deleteTodo", { id: id });
     }
   }
 };

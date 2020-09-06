@@ -20,18 +20,18 @@
         <v-list-item>
           <v-list-item-avatar color="grey lighten-1">
             <!-- 유저 데이터에 있는 아바타 이미지 -->
-            <span v-if="avatar == null" class="text-caption"
-              >{{ nickname }}
+            <span v-if="todoDetail.avatar == null" class="text-caption"
+              >{{ todoDetail.nickname }}
             </span>
-            <v-img v-else :src="avatar" />
+            <v-img v-else :src="todoDetail.avatar" />
           </v-list-item-avatar>
 
           <v-list-item-content>
             <v-list-item-title class="headline">
-              {{ nickname }}님의 할일
+              {{ todoDetail.nickname }}님의 할일
             </v-list-item-title>
             <v-list-item-subtitle>
-              작성일: {{ todo.date_created }}
+              작성일: {{ todoDetail.date_created }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -46,7 +46,7 @@
               <v-list-item-title>
                 <span>세부 내용</span>
               </v-list-item-title>
-              <span class="text--secondary">{{ todo.title }}</span>
+              <span class="text--secondary">{{ todoDetail.title }}</span>
             </v-list-item-content>
           </v-list-item>
 
@@ -57,13 +57,13 @@
                 중요도
               </v-list-item-title>
               <v-list-item-subtitle>
-                {{ priorityDecriptions[todo.importance] }}
+                {{ priorityDecriptions[todoDetail.importance] }}
               </v-list-item-subtitle>
             </v-list-item-content>
 
             <v-list-item-content>
               <v-list-item-title class="text-h3 text-center">
-                {{ priorityEmojis[todo.importance] }}
+                {{ priorityEmojis[todoDetail.importance] }}
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -75,13 +75,13 @@
                 완료 여부
               </v-list-item-title>
               <v-list-item-subtitle>
-                {{ todo.is_complete ? "완료했어요!" : "아직 못했어요" }}
+                {{ todoDetail.is_complete ? "완료했어요!" : "아직 못했어요" }}
               </v-list-item-subtitle>
             </v-list-item-content>
 
             <v-list-item-content>
               <v-list-item-title class="text-h3 text-center">
-                {{ todo.is_complete ? "🙆🏻" : "🙅🏻" }}
+                {{ todoDetail.is_complete ? "🙆🏻" : "🙅🏻" }}
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -110,6 +110,9 @@ export default {
     getAccessToken() {
       return this.$store.getters.getAccessToken;
     },
+    todoDetail() {
+      return this.$store.getters["todolist/todoDetail"];
+    },
     maxLength() {
       // Breakpoint에 따른 truncate 적용 최대 길이 설정
       switch (this.$vuetify.breakpoint.name) {
@@ -129,7 +132,6 @@ export default {
   data() {
     return {
       dialog: false,
-      valid: false,
 
       priorityDecriptions: [
         "하나도 중요하지 않음",
@@ -140,10 +142,6 @@ export default {
       ],
       priorityEmojis: ["😭", "🙁", "😐", "😊", "😍"],
 
-      todo: {},
-      nickname: null,
-      avatar: null,
-
       required() {
         return value => !!value || `어떠한 내용도 입력하지 않았습니다.`;
       }
@@ -151,22 +149,7 @@ export default {
   },
   methods: {
     onOpen() {
-      this.$http
-        .get(`/api/plan/bucket-list/${this.itemId}/`, {
-          headers: { Authorization: `Bearer ${this.getAccessToken}` }
-        })
-        .then(response => {
-          this.todo = response.data;
-          this.nickname = response.data.profile.nickname;
-          this.avatar = response.data.profile.avatar;
-        })
-        .catch(error => {
-          console.log("Error :" + error);
-
-          if (error.response.status == 401) {
-            alert("로그인 시간이 만료되었습니다. 새로고침 후 이용해주세요.");
-          }
-        });
+      this.$store.dispatch("todolist/getTodoDetail", this.itemId);
     },
     onSubmit() {
       this.$http

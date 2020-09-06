@@ -36,7 +36,7 @@ import TodoHeader from "./TodoHeader.vue";
 
 export default {
   created() {
-    this.$store.dispatch("getAllTodos");
+    this.$store.dispatch("todolist/getAllTodos");
   },
   components: {
     todoItem: TodoItem,

@@ -212,7 +212,7 @@ const actions = {
     }
 
     // access 토큰 갱신이 필요한 경우
-    await instance
+    instance
       .post("refresh", {
         refresh: refreshToken
       })
@@ -238,6 +238,8 @@ const actions = {
       })
       .catch(error => {
         console.log("Failed", error.response.data);
+
+        alert("로그인 토큰 정보가 모두 만료되었습니다. 다시 로그인해주세요!");
 
         dispatch("logout");
       });

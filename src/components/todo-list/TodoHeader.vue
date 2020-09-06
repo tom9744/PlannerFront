@@ -55,13 +55,13 @@
 export default {
   computed: {
     numOfTodos() {
-      return this.$store.getters.todos.length;
+      return this.$store.getters["todolist/todos"].length;
     },
     numOfCompleted() {
-      return this.$store.getters.numOfCompletedTodos;
+      return this.$store.getters["todolist/numOfCompletedTodos"];
     },
     numOfInProcess() {
-      return this.$store.getters.numOfInProcessTodos;
+      return this.$store.getters["todolist/numOfInProcessTodos"];
     }
   },
   data() {
@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     onFilter(filterName) {
-      this.$store.dispatch("filterTodos", filterName);
+      this.$store.dispatch("todolist/filterTodos", filterName);
     }
   }
 };

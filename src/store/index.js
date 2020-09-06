@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import authStore from "./modules/authStore.js";
 import mypage from "./modules/mypage.js";
 import weather from "./modules/weather.js";
-import todolist from "./modules/todo-list.js";
+import todolist from "./modules/todolist.js";
 
 Vue.use(Vuex);
 

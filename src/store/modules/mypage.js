@@ -185,17 +185,20 @@ const actions = {
 
     // Bad Request (400)
     if (errorResponse.status == 400) {
-      errorMsg = "잘못된 입력값입니다.";
+      errorMsg = "잘못된 접근입니다.";
     }
-
     // Unauthorized (401)
-    if (errorResponse.status == 401) {
-      errorMsg = "로그인 시간이 만료되었습니다. 새로고침 해주세요.";
+    else if (errorResponse.status == 401) {
+      errorMsg = "로그인 시간이 만료되었습니다. 새로고침 후 다시 시도해주세요.";
     }
-
     // Not Found (404)
-    if (errorResponse.status == 404) {
+    else if (errorResponse.status == 404) {
       errorMsg = "서버 연결이 원활하지 못합니다. 잠시 후 시도해주세요.";
+    }
+    // 기타 HTTP 에러 코드 발생 시
+    else {
+      errorMsg =
+        "예기치 못한 요류가 발생하였습니다. 새로고침 후 다시 시도해주세요.";
     }
 
     const snackbar = {

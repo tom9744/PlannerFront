@@ -115,9 +115,10 @@ export default {
           },
           { headers: { Authorization: `Bearer ${this.getAccessToken}` } }
         )
-        .then(() => {
+        .then(response => {
           // 변경 사항을 State에 반영하기위해 호출한다.
-          this.$store.dispatch("getAllTodos");
+          console.log(response);
+          // this.$store.dispatch("getAllTodos");
           // 다이얼로그를 닫는다.
           this.dialog = false;
         })
