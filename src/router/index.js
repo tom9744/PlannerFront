@@ -72,6 +72,12 @@ const routes = [
 
       next();
     }
+  },
+
+  {
+    path: "*",
+    name: "404 Not Found",
+    component: () => import("../views/404Page.vue")
   }
 ];
 

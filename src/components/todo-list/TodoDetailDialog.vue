@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="350">
+  <v-dialog v-model="dialog" width="450px">
     <!-- v-dialog 템플릿 영역 -->
     <template v-slot:activator="{ on, attrs }">
       <p
@@ -111,6 +111,7 @@ export default {
       return this.$store.getters.getAccessToken;
     },
     maxLength() {
+      // Breakpoint에 따른 truncate 적용 최대 길이 설정
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
           return 100;
@@ -161,6 +162,10 @@ export default {
         })
         .catch(error => {
           console.log("Error :" + error);
+
+          if (error.response.status == 401) {
+            alert("로그인 시간이 만료되었습니다. 새로고침 후 이용해주세요.");
+          }
         });
     },
     onSubmit() {
@@ -182,6 +187,10 @@ export default {
         })
         .catch(error => {
           alert("할일 : " + error.response.data.title);
+
+          if (error.response.status == 401) {
+            alert("로그인 시간이 만료되었습니다. 새로고침 후 이용해주세요.");
+          }
         });
     }
   }
