@@ -1,10 +1,4 @@
 import axios from "axios";
-import authStore from "./authStore.js";
-// import router from "@/router";
-
-const instance = axios.create({
-  baseURL: "https://hrhr-planner.herokuapp.com/api/user/"
-});
 
 const state = {
   // 유저 프로필 정보
@@ -55,12 +49,8 @@ const mutations = {
 
 const actions = {
   getUserInfo({ commit }) {
-    instance
-      .get("me/", {
-        headers: {
-          Authorization: `Bearer ${authStore.state.accessToken}`
-        }
-      })
+    axios
+      .get("user/me/")
       .then(response => {
         const userData = {};
 
@@ -77,8 +67,26 @@ const actions = {
         commit("fetchUserInfo", userData);
       })
       .catch(error => {
-        alert("사용자 정보를 불러오는데 실패했습니다.");
-        console.log(error);
+        const errorResponse = error.response;
+
+        // Bad Request (400)
+        if (errorResponse.status == 400) {
+          alert("잘못된 접근입니다.");
+        }
+        // Unauthorized (401)
+        else if (errorResponse.status == 401) {
+          alert("로그인 시간이 만료되었습니다. 새로고침 후 다시 시도해주세요.");
+        }
+        // Not Found (404)
+        else if (errorResponse.status == 404) {
+          alert("서버 연결이 원활하지 못합니다. 잠시 후 시도해주세요.");
+        }
+        // 기타 HTTP 에러 코드 발생 시
+        else {
+          alert(
+            "예기치 못한 요류가 발생하였습니다. 새로고침 후 다시 시도해주세요."
+          );
+        }
       });
   },
 
@@ -86,16 +94,8 @@ const actions = {
     // 로딩 상태를 True로 설정한다.
     commit("fetchProgCircle", true);
 
-    instance
-      .put(
-        "me/",
-        { nickname: payload.nickname },
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.state.accessToken}`
-          }
-        }
-      )
+    axios
+      .put("user/me/", { nickname: payload.nickname })
       .then(response => {
         const newNickname = response.data.nickname;
         const snackbar = {
@@ -121,12 +121,8 @@ const actions = {
     // FormData에 아바타 파일 정보 추가
     formData.append("avatar", payload.file);
 
-    instance
-      .put("me/avatar", formData, {
-        headers: {
-          Authorization: `Bearer ${authStore.state.accessToken}`
-        }
-      })
+    axios
+      .put("user/me/avatar", formData)
       .then(response => {
         const newAvatar = response.data.avatar;
         const snackbar = {
@@ -147,15 +143,11 @@ const actions = {
     // 로딩 상태를 True로 설정한다.
     commit("fetchProgCircle", true);
 
-    instance
-      .patch(
-        "me/edit",
-        {
-          password: payload.password,
-          password_confirm: payload.password_confirm
-        },
-        { headers: { Authorization: `Bearer ${authStore.state.accessToken}` } }
-      )
+    axios
+      .patch("user/me/edit", {
+        password: payload.password,
+        password_confirm: payload.password_confirm
+      })
       .then(() => {
         const snackbar = {
           flag: true,
@@ -179,8 +171,8 @@ const actions = {
     }, 3000);
   },
 
-  errorHandler({ commit, dispatch }, payload) {
-    const errorResponse = payload.response;
+  errorHandler({ commit, dispatch }, error) {
+    const errorResponse = error.response;
     let errorMsg = "";
 
     // Bad Request (400)

@@ -13,11 +13,7 @@
 </template>
 
 <script>
-export default {
-  created() {
-    this.$store.dispatch("mypage/getUserInfo");
-  }
-};
+export default {};
 </script>
 
 <style scoped></style>

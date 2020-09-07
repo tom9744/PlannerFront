@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const instance = axios.create();
+
 const OPENWEATHER_KEY = "d720160791cfa3196f3426382ffa3d0a";
 const KAKAO_KEY = "0813b6696dceefd83c96d56e4d4e4c6a";
 
@@ -50,7 +52,7 @@ const actions = {
     // 위치 정보를 한글로 표현하기 위해 추가적인 메소드를 호출한다.
     dispatch("coordsToLocation", { latitude: latitude, longitude: longitude });
 
-    axios
+    instance
       .get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${OPENWEATHER_KEY}&units=metric`
       )
@@ -76,7 +78,7 @@ const actions = {
   },
   // 입력받은 지역명 정보에 해당하는 위도, 경도를 구한다.
   getCoords({ commit }, payload) {
-    axios
+    instance
       .get(
         `https://dapi.kakao.com/v2/local/search/address.json?page=1&size=1&query=${payload}`,
         { headers: { Authorization: `KakaoAK ${KAKAO_KEY}` } }
@@ -106,7 +108,7 @@ const actions = {
   },
   // 주어진 위도, 경도로부터 주소를 반환한다.
   coordsToLocation({ commit }, payload) {
-    axios
+    instance
       .get(
         `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?output_coord=WGS84&x=${payload.longitude}&y=${payload.latitude}&input_coord=WGS84"`,
         { headers: { Authorization: `KakaoAK ${KAKAO_KEY}` } }

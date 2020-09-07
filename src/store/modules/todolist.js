@@ -1,9 +1,4 @@
 import axios from "axios";
-import authStore from "./authStore.js";
-
-const instance = axios.create({
-  baseURL: "https://hrhr-planner.herokuapp.com/api/plan/"
-});
 
 const state = {
   todos: [],
@@ -45,11 +40,9 @@ const actions = {
     4. deleteTodo  : ƒ() 할일 삭제 요청을 서버에 전송한다.
   */
   getAllTodos({ state, commit, dispatch }) {
-    instance
-      // 서버로부터 TodoList 항목을 받아온다.
-      .get("bucket-list/", {
-        headers: { Authorization: `Bearer ${authStore.state.accessToken}` }
-      })
+    // 서버로부터 TodoList 항목을 받아온다.
+    axios
+      .get("plan/bucket-list/")
       .then(response => {
         // 받아온 내용을 State에 저장한다.
         commit("fetchTodo", response.data);
@@ -66,12 +59,11 @@ const actions = {
   },
   addTodo({ state, commit, dispatch }, payload) {
     // 새로운 버켓리스트 항목을 서버 데이터베이스에 추가한다.
-    instance
-      .post(
-        "bucket-list/",
-        { title: payload.title, importance: payload.importance },
-        { headers: { Authorization: `Bearer ${authStore.state.accessToken}` } }
-      )
+    axios
+      .post("plan/bucket-list/", {
+        title: payload.title,
+        importance: payload.importance
+      })
       .then(response => {
         let todos = state.todos; // 추가된 할일 정보
         todos.unshift(response.data); // 배열의 맨 앞에 추가
@@ -86,16 +78,10 @@ const actions = {
       });
   },
   toggleTodo({ state, commit, dispatch }, payload) {
-    instance
-      .patch(
-        `bucket-list/${payload.id}/`,
-        { is_complete: payload.newValue }, // 현재 is_complete 값과 반대되는 값으로 수정한다.
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.state.accessToken}`
-          }
-        }
-      )
+    axios
+      .patch(`plan/bucket-list/${payload.id}/`, {
+        is_complete: payload.newValue
+      })
       .then(response => {
         // 변경된 내용을 State에 반영하기 위해 호출한다.
         const toggledTodo = response.data;
@@ -117,10 +103,8 @@ const actions = {
       });
   },
   deleteTodo({ state, commit, dispatch }, payload) {
-    instance
-      .delete(`bucket-list/${payload.id}/`, {
-        headers: { Authorization: `Bearer ${authStore.state.accessToken}` }
-      })
+    axios
+      .delete(`plan/bucket-list/${payload.id}/`)
       .then(() => {
         let todos = state.todos;
 
@@ -208,8 +192,8 @@ const actions = {
 
     commit("fetchCount", counter);
   },
-  errorHandler(error) {
-    console.log(error);
+  errorHandler(context, error) {
+    console.log("TodoList Error", error);
     const errorStatus = error.response.status;
 
     // Bad Request (400)

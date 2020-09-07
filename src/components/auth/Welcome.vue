@@ -20,13 +20,7 @@
 </template>
 
 <script>
-export default {
-  // created() {
-  //     setTimeout(() => {
-  //         this.$router.replace("/");
-  //     }, 3000)
-  // }
-};
+export default {};
 </script>
 
 <style></style>

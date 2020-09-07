@@ -106,8 +106,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   data() {
     return {
@@ -186,8 +184,8 @@ export default {
         name: this.name
       };
 
-      axios
-        .post(`/api/user/register`, formData)
+      this.$http
+        .post(`user/register`, formData)
         .then(() => {
           // 회원가입 성공 시, 웰컴 페이지로 리디렉트 한다.
           this.$router.replace("/user/welcome");

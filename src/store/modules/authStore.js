@@ -1,41 +1,35 @@
 import axios from "axios";
 import router from "@/router";
 
-function isRefreshPossible(
-  accessTokenExpirationDate,
-  refreshTokenExpirationDate
-) {
-  // 현재 시각을 기준으로 access, refresh 토큰의 만료까지 남은 시간 계산
-  const now = new Date();
-  const accessExpiresIn = new Date(accessTokenExpirationDate) - now;
-  const refreshExpiresIn = new Date(refreshTokenExpirationDate) - now;
+const instance = axios.create({
+  baseURL: "http://127.0.0.1:8000/api/"
+});
 
-  // 두 토큰 모두 만료된 경우, 로컬스토리지에서 모든 내용 삭제.
-  if (accessExpiresIn < 0 && refreshExpiresIn < 0) {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("accessTokenExpirationDate");
-    localStorage.removeItem("refreshTokenExpirationDate");
+function isRefreshable(accessTokenExpires, refreshTokenExpires) {
+  // 현재 시각을 기준으로 access, refreshToken의 만료까지 남은 시간 계산
+  const accessExpiresIn = new Date(accessTokenExpires) - new Date();
+  const refreshExpiresIn = new Date(refreshTokenExpires) - new Date();
 
-    return false;
-  }
-  // refresh 토큰이 유요한 경우, true를 반환한다.
-  else if (accessExpiresIn < 0 && refreshExpiresIn > 0) {
+  // accessToken은 만료되었지만 refreshToken이 유효한 경우, true를 반환한다.
+  if (accessExpiresIn < 0 && refreshExpiresIn > 0) {
     return true;
   }
+
+  // refreshToken이 만료된 경우, false를 반환한다.
+  if (refreshExpiresIn < 0) {
+    return false;
+  }
+
+  // 그 외 나머지 경우(Token 재발급 필요 없음), null을 반환한다.
   return null;
 }
-
-const instance = axios.create({
-  baseURL: "https://hrhr-planner.herokuapp.com/api/user/"
-});
 
 const state = {
   // 인증 토큰 관련
   accessToken: null,
   refreshToken: null,
-  accessTokenExpirationDate: null,
-  refreshTokenExpirationDate: null,
+  accessTokenExpires: null,
+  refreshTokenExpires: null,
 
   // 유저 프로필 정보
   userData: null,
@@ -52,16 +46,16 @@ const mutations = {
   login(state, payload) {
     state.accessToken = payload.accessToken;
     state.refreshToken = payload.refreshToken;
-    state.accessTokenExpirationDate = payload.accessTokenExpirationDate;
-    state.refreshTokenExpirationDate = payload.refreshTokenExpirationDate;
+    state.accessTokenExpires = payload.accessTokenExpires;
+    state.refreshTokenExpires = payload.refreshTokenExpires;
   },
 
   // 로그아웃 Mutation
   logout(state) {
     state.accessToken = null;
     state.refreshToken = null;
-    state.accessTokenExpirationDate = null;
-    state.refreshTokenExpirationDate = null;
+    state.accessTokenExpires = null;
+    state.refreshTokenExpires = null;
   },
 
   // 로그인 성공/실패 여부 Mutation
@@ -79,24 +73,21 @@ const actions = {
     // 로딩 상태를 true로 바꾼다.
     commit("fetchLoading", true);
 
-    // axios를 통해 URL로 HTTP POST 요청을 보낸다.
     instance
-      .post(`login`, payload)
-      // 서버가 정상적으로 응답한 경우
+      .post(`user/login`, payload)
       .then(response => {
         const data = response.data;
 
-        const accessTokenExpirationDate = new Date(data.access_expiration_date);
-        const refreshTokenExpirationDate = new Date(
-          data.refresh_expiration_date
-        );
+        // 자바스크립트 Date 객체로 파싱
+        const accessTokenExpires = new Date(data.access_expiration_date);
+        const refreshTokenExpires = new Date(data.refresh_expiration_date);
 
         // State에 저장할 데이터
         const authData = {
           accessToken: data.access,
           refreshToken: data.refresh,
-          accessTokenExpirationDate: accessTokenExpirationDate.toString(),
-          refreshTokenExpirationDate: refreshTokenExpirationDate.toString()
+          accessTokenExpires: accessTokenExpires.toString(),
+          refreshTokenExpires: refreshTokenExpires.toString()
         };
 
         // mutation 실행
@@ -104,23 +95,16 @@ const actions = {
 
         localStorage.setItem("accessToken", authData.accessToken);
         localStorage.setItem("refreshToken", authData.refreshToken);
+        localStorage.setItem("accessTokenExpires", authData.accessTokenExpires);
         localStorage.setItem(
-          "accessTokenExpirationDate",
-          authData.accessTokenExpirationDate
-        );
-        localStorage.setItem(
-          "refreshTokenExpirationDate",
-          authData.refreshTokenExpirationDate
+          "refreshTokenExpires",
+          authData.refreshTokenExpires
         );
 
-        // 로딩 상태를 false 바꾼다.
-        commit("fetchLoading", false);
+        commit("fetchLoading", false); // 로딩 상태를 false 바꾼다.
+        commit("fetchLoginErrorMsg", null); // 로그인 에러 메세지를 초기화한다.
 
-        // 로그인 에러 메세지를 초기화한다.
-        commit("fetchLoginErrorMsg", null);
-
-        // 로그인 성공 시, 홈 페이지로 리디렉트한다.
-        router.replace("/");
+        router.replace("/"); // 로그인 성공 시, 홈 페이지로 리디렉트한다.
       })
       .catch(error => {
         // 로그인 오류 시, 서버로부터 반환된 에러 데이터를 가져온다.
@@ -131,17 +115,13 @@ const actions = {
         if (errorResponse.status == 401) {
           errorMsg = "이메일 또는 비밀번호를 다시 확인해주세요.";
         }
-
         // Not Found(404) 에러 처리
-        if (errorResponse.status == 404) {
+        else if (errorResponse.status == 404) {
           errorMsg = "서버 연결이 원활하지 못합니다. 잠시 후 시도해주세요.";
         }
 
-        // 에러 메세지 State에 저장
-        commit("fetchLoginErrorMsg", errorMsg);
-
-        // 로딩 상태를 false 바꾼다.
-        commit("fetchLoading", false);
+        commit("fetchLoginErrorMsg", errorMsg); // 에러 메세지 State에 저장
+        commit("fetchLoading", false); // 로딩 상태를 false 바꾼다.
       });
   },
 
@@ -151,116 +131,88 @@ const actions = {
 
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("accessTokenExpirationDate");
-    localStorage.removeItem("refreshTokenExpirationDate");
-
-    router.replace("/user");
+    localStorage.removeItem("accessTokenExpires");
+    localStorage.removeItem("refreshTokenExpires");
   },
 
   async tryAutoLogin({ commit, dispatch }) {
     // LocalStrage에서 사용자 인증에 필요한 데이터를 가져온다.
     let accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
-    let accessTokenExpirationDate = localStorage.getItem(
-      "accessTokenExpirationDate"
-    );
-    const refreshTokenExpirationDate = localStorage.getItem(
-      "refreshTokenExpirationDate"
-    );
+    let accessTokenExpires = localStorage.getItem("accessTokenExpires");
+    const refreshTokenExpires = localStorage.getItem("refreshTokenExpires");
 
     // 인증에 필요한 데이터가 존재하지 않는 경우, 자동 로그인 실패.
     if (
       !accessToken ||
       !refreshToken ||
-      !accessTokenExpirationDate ||
-      !refreshTokenExpirationDate
+      !accessTokenExpires ||
+      !refreshTokenExpires
     ) {
-      console.log("Auto Login Failed!");
+      console.log("토큰 정보가 없습니다.");
       return;
     }
 
-    // Refresh 토큰이 유효하고 Access 토큰이 갱신 가능한지 확인한다.
-    const flag = await isRefreshPossible(
-      accessTokenExpirationDate,
-      refreshTokenExpirationDate
-    );
+    /*
+      accessToken, refreshToken의 상태를 검사한다.
+      true: 재발급 가능, false: 재발급 불가능, null: 재발급 불필요
+    */
+    const flag = isRefreshable(accessTokenExpires, refreshTokenExpires);
 
-    // 두 토큰이 모두 만료된 경우
+    // 재발급이 불가능한 경우, 로그아웃 실행
     if (flag == false) {
-      alert("로그인 정보가 만료되었습니다. 다시 로그인해주세요!");
+      await dispatch("logout");
+
+      alert("[Router] 세션이 만료되었습니다. 다시 로그인해주세요.");
+
       return;
     }
 
     const authData = {
       accessToken,
       refreshToken,
-      accessTokenExpirationDate,
-      refreshTokenExpirationDate
+      accessTokenExpires,
+      refreshTokenExpires
     };
 
     // 두 토큰 모두 유효한 경우
     if (flag == null) {
-      // 유저 데이터로 로그인.
-      commit("login", authData);
+      // 갱신된 인증 정보를 State에 반영한다.
+      await commit("login", authData);
 
-      // 자동 로그아웃 타이머를 시작한다.
-      dispatch("startLogoutTimer");
-
-      console.log("Auto Login Success!");
+      console.log("토큰 재발급 없이 자동 로그인 완료!");
 
       return;
     }
 
     // access 토큰 갱신이 필요한 경우
-    instance
-      .post("refresh", {
+    axios
+      .post("user/refresh", {
         refresh: refreshToken
       })
-      .then(response => {
-        const data = response.data;
-
+      .then(({ data }) => {
         const newAccessToken = data.access;
-        const newAccessTokenExpirationDate = new Date(
-          data.access_expiration_date
-        );
+        const newAccessTokenExpires = new Date(data.access_expiration_date);
 
         // 인증 정보를 업데이트한다.
         authData.accessToken = newAccessToken;
-        authData.accessTokenExpirationDate = newAccessTokenExpirationDate.toString();
+        authData.accessTokenExpires = newAccessTokenExpires.toString();
 
         localStorage.setItem("accessToken", authData.accessToken);
-        localStorage.setItem(
-          "accessTokenExpirationDate",
-          authData.accessTokenExpirationDate
-        );
+        localStorage.setItem("accessTokenExpires", authData.accessTokenExpires);
 
-        console.log("accessToken Succesfully Updated!");
+        // 갱신된 인증 정보를 State에 반영한다.
+        commit("login", authData);
+
+        console.log("accessToken 재발급 후 자동 로그인 완료!");
       })
       .catch(error => {
         console.log("Failed", error.response.data);
 
-        alert("로그인 토큰 정보가 모두 만료되었습니다. 다시 로그인해주세요!");
+        alert("토큰 갱신에 실패했습니다. 다시 로그인해주세요.");
 
         dispatch("logout");
       });
-
-    // 유저 데이터로 로그인.
-    commit("login", authData);
-
-    // 자동 로그아웃 타이머를 시작한다.
-    dispatch("startLogoutTimer");
-
-    console.log("Auto Login Success!");
-  },
-
-  startLogoutTimer({ dispatch, state }) {
-    // Refresh 토큰 만료까지 남은 시간 계산
-    const refreshTimetoExpire =
-      new Date(state.refreshTokenExpirationDate) - new Date();
-
-    setTimeout(() => {
-      dispatch("logout");
-    }, refreshTimetoExpire);
   }
 };
 

@@ -41,7 +41,15 @@ const routes = [
         name: "Activate",
         component: Activate
       }
-    ]
+    ],
+    beforeEnter: async (to, from, next) => {
+      // 로그인 상태가 아닌 경우만 접근할 수 있도록 한다.
+      if (!store.getters.isLoggedIn) {
+        next();
+      } else {
+        next("/");
+      }
+    }
   },
 
   {
@@ -66,12 +74,7 @@ const routes = [
     path: "/todo-list",
     name: "TodoList",
     component: Todo,
-    meta: { requiresAuth: true },
-    beforeEnter: async (to, from, next) => {
-      await store.dispatch("mypage/getUserInfo");
-
-      next();
-    }
+    meta: { requiresAuth: true }
   },
 
   {
@@ -97,6 +100,25 @@ router.beforeEach(async (to, from, next) => {
       next();
     }
   } else {
+    next();
+  }
+});
+
+router.beforeEach(async (to, from, next) => {
+  // 다음 라우터 Path가 Todolist 또는 MyPage인 경우,
+  if (to.path === "/todo-list" || to.path === "/mypage") {
+    // Vuex State에 유저 정보가 있는지 확인한다.
+    if (store.state.mypage.email === null) {
+      await store.dispatch("mypage/getUserInfo");
+      next();
+    }
+    // 이미 Vuex State에 유저 정보가 있다면, 다음으로 바로 진행한다.
+    else {
+      next();
+    }
+  }
+  // 그 외의 Path로 향하는 경우, 다음으로 진행한다.
+  else {
     next();
   }
 });

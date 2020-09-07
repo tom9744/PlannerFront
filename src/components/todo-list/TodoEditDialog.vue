@@ -104,7 +104,7 @@ export default {
   methods: {
     onOpen() {
       this.$http
-        .get(`/api/plan/bucket-list/${this.itemId}/`, {
+        .get(`plan/bucket-list/${this.itemId}/`, {
           headers: { Authorization: `Bearer ${this.getAccessToken}` }
         })
         .then(response => {
@@ -118,7 +118,7 @@ export default {
     onSubmit() {
       this.$http
         .put(
-          `/api/plan/bucket-list/${this.itemId}/`,
+          `plan/bucket-list/${this.itemId}/`,
           {
             title: this.todo.title,
             importance: this.todo.importance,

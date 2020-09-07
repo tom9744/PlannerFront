@@ -50,7 +50,7 @@ export default {
     const token = this.$route.params.token;
     // axios GET 통신을 사용해 이메일 인증.
     this.$http
-      .get(`/api/user/activate/${uidb64}/${token}`)
+      .get(`user/activate/${uidb64}/${token}`)
       .then(response => {
         this.resonpseMsg = response.data;
         this.isActivated = true;
