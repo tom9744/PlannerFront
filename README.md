@@ -6,6 +6,8 @@ npm install
 npm run serve
 ```
 
+or visit [Here](https://hrhr-planner.tk/)
+
 ### 배경
 2020년 1학기 종강 이후, 평소 관심있던 웹 개발 공부를 결심하였다.
 HTML, CSS, JS에 대한 **아주 기초적인** 지식은 갖추고 있다고 생각했기에, 최근 유행하는 **MVVM 패턴**의 프레임워크
