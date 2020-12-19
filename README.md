@@ -20,10 +20,10 @@ Python 기반의 프레임워크 Django도 함께 공부하며 진행하였다. 
 
 ### 기술 스택
 > **Base**
->> Vue.js 2.X version
->> Javascript ES5 & ES6
+>> Vue.js 2.X version  
+>> Javascript ES5 & ES6  
 > **UI Design Library**
->> Vuetify 2.3.X
+>> Vuetify 2.3.X  
 > **Extra**
 >> Vuex  
 >> Vue Router  
